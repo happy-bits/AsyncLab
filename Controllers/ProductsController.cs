@@ -48,6 +48,13 @@ public class ProductsController : Controller
     public async Task<string> StarifyAsync(string text)
     {
         await Task.Delay(1000); // Simulerar en långsam operation
+
         return $"***{text}***";
+    }
+
+    public async Task SomeFunction()
+    {
+        // Do stuff
+        var result = await StarifyAsync("abc");
     }
 }
