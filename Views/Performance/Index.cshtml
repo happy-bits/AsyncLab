@@ -48,13 +48,14 @@
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            const maxEndTime = 4000
             const padding = 40;
             const barHeight = 20;
             const spacing = 10;
             
-            // Find the maximum end time for scaling
-            const maxEndTime = Math.max(...results.map(r => r.endTime));
-            const timeScale = (canvas.width - padding * 2) / maxEndTime;
+            // Use fixed max time of 4000ms (4000ms * 10000 ticks/ms)
+            const maxEndTimeTicks = maxEndTime * 10000;
+            const timeScale = (canvas.width - padding * 2) / maxEndTimeTicks;
             
             // Draw time axis
             ctx.beginPath();
@@ -63,10 +64,10 @@
             ctx.stroke();
             
             // Draw time markers
-            const timeMarkers = 5;
+            const timeMarkers = 8; // Changed to 8 to show markers every 500ms
             for (let i = 0; i <= timeMarkers; i++) {
                 const x = padding + (canvas.width - padding * 2) * (i / timeMarkers);
-                const timeValue = Math.round((maxEndTime * (i / timeMarkers)) / 10000);
+                const timeValue = (maxEndTime * i) / timeMarkers; // Simply calculate in ms directly
                 
                 ctx.beginPath();
                 ctx.moveTo(x, canvas.height - padding - 5);
