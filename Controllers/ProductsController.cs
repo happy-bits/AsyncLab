@@ -57,4 +57,16 @@ public class ProductsController : Controller
         // Do stuff
         var result = await StarifyAsync("abc");
     }
+
+    public string ReadSomething()
+    {
+        var result = System.IO.File.ReadAllText("some-file.txt");
+        return result;
+    }
+
+    public async Task<string> ReadSomethingAsync()
+    {
+        var result = await System.IO.File.ReadAllTextAsync("some-file.txt");
+        return result;
+    }
 }
