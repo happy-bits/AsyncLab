@@ -3,6 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Lägg till denna Kestrel-konfiguration
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    // Begränsa antalet samtidiga anslutningar till ett lågt antal
+    serverOptions.Limits.MaxConcurrentConnections =10;
+    
+    // Konfigurera thread pool för att begränsa antalet worker threads
+    ThreadPool.SetMinThreads(5, 5);
+    ThreadPool.SetMaxThreads(5, 5);
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

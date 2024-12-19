@@ -69,4 +69,21 @@ public class ProductsController : Controller
         var result = await System.IO.File.ReadAllTextAsync("some-file.txt");
         return result;
     }
+
+    public IActionResult PerformanceTest()
+    {
+        return View();
+    }
+
+    public IActionResult SlowOperation()
+    {
+        Thread.Sleep(1000); // Simulerar långsam operation
+        return Json(new { success = true });
+    }
+
+    public async Task<IActionResult> SlowOperationAsync()
+    {
+        await Task.Delay(1000); // Simulerar långsam operation
+        return Json(new { success = true });
+    }
 }
