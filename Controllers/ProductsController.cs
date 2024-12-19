@@ -13,9 +13,10 @@ public class ProductsController : Controller
         _context = context;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        var products = await _context.Products.ToListAsync();
-        return View(products);
+        var products = _context.Products.ToList(); 
+        return View("Index", products);
     }
+    
 }
