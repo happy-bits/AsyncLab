@@ -26,10 +26,78 @@
             </div>
         </div>
     </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Visualization</h5>
+                    <canvas id="timelineCanvas" width="800" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
+        const canvas = document.getElementById('timelineCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function drawTimeline(results) {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const padding = 40;
+            const barHeight = 20;
+            const spacing = 10;
+            
+            // Find the maximum end time for scaling
+            const maxEndTime = Math.max(...results.map(r => r.endTime));
+            const timeScale = (canvas.width - padding * 2) / maxEndTime;
+            
+            // Draw time axis
+            ctx.beginPath();
+            ctx.moveTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+            
+            // Draw time markers
+            const timeMarkers = 5;
+            for (let i = 0; i <= timeMarkers; i++) {
+                const x = padding + (canvas.width - padding * 2) * (i / timeMarkers);
+                const timeValue = Math.round((maxEndTime * (i / timeMarkers)) / 10000);
+                
+                ctx.beginPath();
+                ctx.moveTo(x, canvas.height - padding - 5);
+                ctx.lineTo(x, canvas.height - padding + 5);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.fillText(timeValue + 'ms', x, canvas.height - padding + 20);
+            }
+            
+            // Draw request bars
+            results.forEach((result, index) => {
+                const y = padding + index * (barHeight + spacing);
+                const startX = padding + result.startTime * timeScale;
+                const endX = padding + result.endTime * timeScale;
+                
+                // Draw bar
+                ctx.fillStyle = '#007bff';
+                ctx.fillRect(startX, y, endX - startX, barHeight);
+                
+                // Draw label
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'right';
+                ctx.fillText(`Request ${result.id}`, padding - 10, y + barHeight / 2 + 5);
+                
+                // Draw thread ID
+                ctx.textAlign = 'left';
+                ctx.fillText(`Thread ${result.threadId}`, endX + 10, y + barHeight / 2 + 5);
+            });
+        }
 
         async function runTest(type) {
             if (type !== 'sync' && type !== 'async') {
@@ -42,10 +110,12 @@
                 requests.push(fetch(`/Performance/${action}?id=${i + 1}`));
             }
 
-            await Promise.all(requests);
-
+            const startTime = performance.now();
             const responses = await Promise.all(requests);
             const results = await Promise.all(responses.map(r => r.json()));
+            const endTime = performance.now();
+            
+            document.getElementById(type + 'Time').textContent = Math.round(endTime - startTime);
             
             const minStartTime = Math.min(...results.map(r => r.startTime));
 
@@ -56,8 +126,7 @@
             }));
 
             console.log(adjustedResults);
+            drawTimeline(adjustedResults);
         }
-
-
     </script>
 }
