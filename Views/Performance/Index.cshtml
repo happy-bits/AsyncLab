@@ -50,24 +50,25 @@
             
             const maxEndTime = 4000
             const padding = 40;
+            const offsetX = 100;  // New constant for horizontal offset
             const barHeight = 20;
             const spacing = 10;
             
             // Use fixed max time of 4000ms (4000ms * 10000 ticks/ms)
             const maxEndTimeTicks = maxEndTime * 10000;
-            const timeScale = (canvas.width - padding * 2) / maxEndTimeTicks;
+            const timeScale = (canvas.width - padding * 2 - offsetX) / maxEndTimeTicks;
             
             // Draw time axis
             ctx.beginPath();
-            ctx.moveTo(padding, canvas.height - padding);
+            ctx.moveTo(padding + offsetX, canvas.height - padding);
             ctx.lineTo(canvas.width - padding, canvas.height - padding);
             ctx.stroke();
             
             // Draw time markers
-            const timeMarkers = 8; // Changed to 8 to show markers every 500ms
+            const timeMarkers = 8;
             for (let i = 0; i <= timeMarkers; i++) {
-                const x = padding + (canvas.width - padding * 2) * (i / timeMarkers);
-                const timeValue = (maxEndTime * i) / timeMarkers; // Simply calculate in ms directly
+                const x = padding + offsetX + (canvas.width - padding * 2 - offsetX) * (i / timeMarkers);
+                const timeValue = (maxEndTime * i) / timeMarkers;
                 
                 ctx.beginPath();
                 ctx.moveTo(x, canvas.height - padding - 5);
@@ -82,8 +83,8 @@
             // Draw request bars
             results.forEach((result, index) => {
                 const y = padding + index * (barHeight + spacing);
-                const startX = padding + result.startTime * timeScale;
-                const endX = padding + result.endTime * timeScale;
+                const startX = padding + offsetX + result.startTime * timeScale;
+                const endX = padding + offsetX + result.endTime * timeScale;
                 
                 // Draw bar
                 ctx.fillStyle = '#007bff';
@@ -92,7 +93,7 @@
                 // Draw label
                 ctx.fillStyle = '#000';
                 ctx.textAlign = 'right';
-                ctx.fillText(`Request ${result.id}`, padding - 10, y + barHeight / 2 + 5);
+                ctx.fillText(`Request ${result.id}`, padding + offsetX - 10, y + barHeight / 2 + 5);
                 
                 // Draw thread ID
                 ctx.textAlign = 'left';
