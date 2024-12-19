@@ -8,6 +8,13 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     ThreadPool.SetMinThreads(5, 5); // denna krävs annars kommer systemet starta med flera trådan än 5 och sedan trappa ner
     ThreadPool.SetMaxThreads(5, 5);
+    
+    // Aktivera HTTP/2 - annars sättre webläsaren en begränsning hur många samtidiga anslutningar som tillåt per domän
+    serverOptions.ListenLocalhost(5001, options =>
+    {
+        options.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+        options.UseHttps();  // HTTP/2 kräver HTTPS
+    });
 });
 
 // Add services to the container.
