@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Synchronous Test</h5>
                     <p>Time taken: <span id="syncTime">0</span> ms</p>
-                    <button class="btn btn-primary" onclick="runSyncTest()">Run Sync Test</button>
+                    <button class="btn btn-primary" onclick="runTest('sync')">Run Sync Test</button>
                 </div>
             </div>
         </div>
@@ -21,7 +21,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Asynchronous Test</h5>
                     <p>Time taken: <span id="asyncTime">0</span> ms</p>
-                    <button class="btn btn-primary" onclick="runAsyncTest()">Run Async Test</button>
+                    <button class="btn btn-primary" onclick="runTest('async')">Run Async Test</button>
                 </div>
             </div>
         </div>
@@ -31,38 +31,33 @@
 @section Scripts {
     <script>
 
-        async function runSyncTest() {
-            const startTime = performance.now();
-            console.log('Starting sync test at:', new Date().toISOString());
+        async function runTest(type) {
+            if (type !== 'sync' && type !== 'async') {
+                throw new Error('Type must be either "sync" or "async"');
+            }
             const requests = [];
 
             for (let i = 0; i < 10; i++) {
-                console.log(`Initiating async request ${i + 1}`);
-                requests.push(fetch(`/Performance/SlowOperation?id=${i + 1}`));
+                const action = type === 'sync' ? 'SlowOperation' : 'SlowOperation2';
+                requests.push(fetch(`/Performance/${action}?id=${i + 1}`));
             }
 
-            console.log('Waiting for all requests to complete...');
             await Promise.all(requests);
 
-            const endTime = performance.now();
-            document.getElementById('syncTime').textContent = Math.round(endTime - startTime);
+            const responses = await Promise.all(requests);
+            const results = await Promise.all(responses.map(r => r.json()));
+            
+            const minStartTime = Math.min(...results.map(r => r.startTime));
+
+            const adjustedResults = results.map(r => ({
+                ...r,
+                startTime: r.startTime - minStartTime,
+                endTime: r.endTime - minStartTime
+            }));
+
+            console.log(adjustedResults);
         }
 
-        async function runAsyncTest() {
-            const startTime = performance.now();
-            console.log('Starting async test at:', new Date().toISOString());
-            const requests = [];
 
-            for (let i = 0; i < 10; i++) {
-                console.log(`Initiating async request ${i + 1}`);
-                requests.push(fetch(`/Performance/SlowOperation2?id=${i + 1}`));
-            }
-
-            console.log('Waiting for all requests to complete...');
-            await Promise.all(requests);
-
-            const endTime = performance.now();
-            document.getElementById('asyncTime').textContent = Math.round(endTime - startTime);
-        }
     </script>
 }

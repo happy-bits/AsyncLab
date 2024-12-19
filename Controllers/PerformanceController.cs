@@ -13,24 +13,23 @@ public class PerformanceController : Controller
 
     public IActionResult SlowOperation(int id)
     {
-        // var threadId = Thread.CurrentThread.ManagedThreadId;
-        // Console.WriteLine($"Sync operation {id} started at: {DateTime.Now:HH:mm:ss.fff} on thread {threadId}");
+        var threadId = Thread.CurrentThread.ManagedThreadId;
+        var startTime = DateTime.Now.Ticks;   
         
         Thread.Sleep(1000); 
         
-        // Console.WriteLine($"Sync operation {id} completed at: {DateTime.Now:HH:mm:ss.fff} on thread {threadId}");
-        return Json(new { success = true}); 
+        var endTime = DateTime.Now.Ticks;
+        return Json(new { id, threadId, startTime, endTime, duration = endTime - startTime }); 
     }
 
     public async Task<IActionResult> SlowOperation2(int id)
     {
-        // var threadId = Thread.CurrentThread.ManagedThreadId;
-        // Console.WriteLine($"Async operation {id} started at: {DateTime.Now:HH:mm:ss.fff} on thread {threadId}");
+        var threadId = Thread.CurrentThread.ManagedThreadId;
+        var startTime = DateTime.Now.Ticks;   
         
         await Task.Delay(1000);
         
-        // var newThreadId = Thread.CurrentThread.ManagedThreadId;
-        // Console.WriteLine($"Async operation {id} completed at: {DateTime.Now:HH:mm:ss.fff} on thread {newThreadId}");
-        return Json(new { success = true });
+        var endTime = DateTime.Now.Ticks;
+        return Json(new { id, threadId, startTime, endTime, duration = endTime - startTime   }); 
     }
 }
