@@ -36,14 +36,14 @@
             console.log('Starting sync test at:', new Date().toISOString());
             const requests = [];
 
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) {
                 console.log(`Initiating async request ${i + 1}`);
                 requests.push(fetch(`/Performance/SlowOperation?id=${i + 1}`));
             }
 
             console.log('Waiting for all requests to complete...');
             await Promise.all(requests);
-            
+
             const endTime = performance.now();
             document.getElementById('syncTime').textContent = Math.round(endTime - startTime);
         }
@@ -53,14 +53,14 @@
             console.log('Starting async test at:', new Date().toISOString());
             const requests = [];
 
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) {
                 console.log(`Initiating async request ${i + 1}`);
                 requests.push(fetch(`/Performance/SlowOperation2?id=${i + 1}`));
             }
 
             console.log('Waiting for all requests to complete...');
             await Promise.all(requests);
-            
+
             const endTime = performance.now();
             document.getElementById('asyncTime').textContent = Math.round(endTime - startTime);
         }

@@ -6,11 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Lägg till denna Kestrel-konfiguration
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    // Begränsa antalet samtidiga anslutningar till ett lågt antal
-    serverOptions.Limits.MaxConcurrentConnections =10;
-    
-    // Konfigurera thread pool för att begränsa antalet worker threads
-    ThreadPool.SetMinThreads(5, 5);
+    ThreadPool.SetMinThreads(5, 5); // denna krävs annars kommer systemet starta med flera trådan än 5 och sedan trappa ner
     ThreadPool.SetMaxThreads(5, 5);
 });
 
