@@ -13,39 +13,41 @@ public class PerformanceController : Controller
 
     public IActionResult SlowOperation(int id)
     {
-        var startThreadId = Thread.CurrentThread.ManagedThreadId;
-        var startTime = DateTime.Now.Ticks;   
-        
-        Thread.Sleep(1000); 
-        
-        var endThreadId = Thread.CurrentThread.ManagedThreadId;
+        var startThreadId = Environment.CurrentManagedThreadId;
+        var startTime = DateTime.Now.Ticks;
+
+        Thread.Sleep(1000);
+
+        var endThreadId = Environment.CurrentManagedThreadId;
         var endTime = DateTime.Now.Ticks;
-        return Json(new { 
-            id, 
-            startThreadId, 
+
+        return Json(new
+        {
+            id,
+            startThreadId,
             endThreadId,
-            startTime, 
-            endTime, 
-            duration = endTime - startTime 
-        }); 
+            startTime,
+            endTime
+        });
     }
 
     public async Task<IActionResult> SlowOperation2(int id)
     {
-        var startThreadId = Thread.CurrentThread.ManagedThreadId;
-        var startTime = DateTime.Now.Ticks;   
-        
+        var startThreadId = Environment.CurrentManagedThreadId;
+        var startTime = DateTime.Now.Ticks;
+
         await Task.Delay(1000);
-        
-        var endThreadId = Thread.CurrentThread.ManagedThreadId;
+
+        var endThreadId = Environment.CurrentManagedThreadId;
         var endTime = DateTime.Now.Ticks;
-        return Json(new { 
-            id, 
-            startThreadId, 
+
+        return Json(new
+        {
+            id,
+            startThreadId,
             endThreadId,
-            startTime, 
-            endTime, 
-            duration = endTime - startTime 
-        }); 
+            startTime,
+            endTime
+        });
     }
 }
